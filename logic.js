@@ -748,9 +748,18 @@ function replaceResultCouple(coupleIndex)
     availableReplacementCouples.splice(coupleIndex, 1);
     availableReplacementCouples.push(replacedCouple);
     selectedCouple = replacementCouple;
+    replaceableResultStart = replacementCouple.length;
     replacementTargetIndex = null;
     replacementTargetType = null;
     showResult(false);
+}
+
+function getReplacementGroupSize(couple)
+{
+    let isMercenaryGroup = ["EL", "EO", "OR"].every(function(faction) {
+        return couple.includes(faction);
+    });
+    return isMercenaryGroup ? 2 : couple.length;
 }
 
 function getCoupleName(couple)
@@ -900,7 +909,8 @@ function calculate(playerCount, selectedCoupleName) {
         ? Couples[selectedCoupleName]
         : selectedCouples[Math.floor(Math.random() * selectedCouples.length)];
     availableReplacementCouples = selectedCouples.filter(function(couple) {
-        return couple !== selectedCouple && couple.length === selectedCouple.length;
+        return couple !== selectedCouple &&
+            getReplacementGroupSize(couple) === getReplacementGroupSize(selectedCouple);
     });
 
     for(var c in selectedCouple) {
