@@ -96,12 +96,36 @@ randomizeButtons.appendChild(customRandomizeSection);
 let checkAllBtn = document.createElement("button");
 checkAllBtn.classList.add("btn");
 checkAllBtn.classList.add("btn-secondary");
-checkAllBtn.classList.add("btn-lg");
-checkAllBtn.classList.add("col-12");
 checkAllBtn.classList.add("trasp-background");
-checkAllBtn.classList.add("mb-2");
 checkAllBtn.setAttribute("type","button");
 checkAllBtn.setAttribute("onclick", "checkAllFactions()");
+
+let factionPresetButtons = document.createElement("div");
+factionPresetButtons.setAttribute("id", "factionPresetButtons");
+
+let germanFactionsBtn = document.createElement("button");
+germanFactionsBtn.classList.add("btn", "btn-secondary", "btn-sm", "trasp-background");
+germanFactionsBtn.setAttribute("type", "button");
+germanFactionsBtn.setAttribute("aria-label", "Select German Claim editions");
+germanFactionsBtn.innerText = "DE";
+germanFactionsBtn.addEventListener("click", function() {
+    selectFactionPreset(["C1", "C2", "C5A", "CAL"]);
+});
+
+let englishFactionsBtn = document.createElement("button");
+englishFactionsBtn.classList.add("btn", "btn-secondary", "btn-sm", "trasp-background");
+englishFactionsBtn.setAttribute("type", "button");
+englishFactionsBtn.setAttribute("aria-label", "Select English Claim editions");
+englishFactionsBtn.innerText = "EN";
+englishFactionsBtn.addEventListener("click", function() {
+    selectFactionPreset(Object.keys(Deck).filter(function(deck) {
+        return ["C2", "C5A", "CAL"].indexOf(deck) === -1;
+    }));
+});
+
+factionPresetButtons.appendChild(checkAllBtn);
+factionPresetButtons.appendChild(germanFactionsBtn);
+factionPresetButtons.appendChild(englishFactionsBtn);
 
 let selectorCollapsed = false;
 let factionSelector = document.createElement("div");
@@ -172,7 +196,7 @@ function refreshSelectionForm()
     selectorToggleContainer.appendChild(toggleSelectorBtn);
     factionSelector.appendChild(SELECT_FACT_El);
     factionSelector.appendChild(document.createElement("hr"));
-    factionSelector.appendChild(checkAllBtn);
+    factionSelector.appendChild(factionPresetButtons);
 
     for(let d in Deck) {
         let formGroup = document.createElement("div");
@@ -390,6 +414,22 @@ function checkAllFactions()
     }
     for(var d in Deck) {
         Deck[d].Include = includeAll;
+    }
+    refreshSelectionForm();
+}
+
+function selectFactionPreset(deckKeys)
+{
+    for(var f in Factions) {
+        Factions[f].Include = false;
+    }
+    for(var d in Deck) {
+        Deck[d].Include = deckKeys.indexOf(d) !== -1;
+        if(Deck[d].Include) {
+            for(var f in Deck[d].Factions) {
+                Factions[Deck[d].Factions[f]].Include = true;
+            }
+        }
     }
     refreshSelectionForm();
 }
